@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html> 
   <head>
-  <script src="jsPsych-master/jspsych.js"> //call the jspsych plugin for javascript</script>
-  <script src="jsPsych-master/plugins/jspsych-instructions.js">//call the extra plugins from jspsych</script>
+  <script src="jsPsych-master/jspsych.js"> //call the jspsych plugin</script>
+  <script src="jsPsych-master/plugins/jspsych-instructions.js">//call the extra plugins from jspsych that are needed</script>
   <script src="jsPsych-master/plugins/jspsych-html-keyboard-response.js"></script>
   <script src="jsPsych-master/plugins/jspsych-image-keyboard-response.js"></script>
   <script src="jsPsych-master/plugins/jspsych-image-button-response.js"></script>
@@ -32,7 +32,7 @@ var instructions = { //Shows the participant instructions in four pages navigate
 var practiceTrial = { //Gives the participant a practice trial with a choice of a correct and incorrect answer
   type: 'html-button-response',
   stimulus: '<p>Please click button labeled 2</p>', //ask for true response
-  choices: ['1', '2'], //1 is false, 2 is true (thats why we ask for true response)
+  choices: ['1', '2'], //1 is false, 2 is true (we ask for true response)
 };
 
 var feedback = { //tells you if you got last trial correct or incorrect (I can make them redo ect... but for now just tells if success or not)
@@ -49,7 +49,7 @@ var feedback = { //tells you if you got last trial correct or incorrect (I can m
   }
 };
 
-clearImgs = function() //This is just a function I found online that removes all images that have been put on screen.
+clearImgs = function() //This is just a function that removes all images that have been put on screen.
 {
  for (var i= document.images.length; i-->0;)// for i== 1 -> the length of document.images.length
  document.images[i].parentNode.removeChild(document.images[i]); //remove image document.images(i)
@@ -57,13 +57,13 @@ clearImgs = function() //This is just a function I found online that removes all
 
 var addImg = function(src){ //Function to add image to trial that works for all the the images as long as they are same size
   var img = document.createElement("img"); //create an image on screen using the passed string as the img
-  img.src = src; //src of img = src of passed variable aka the variable name itself (I think)
-  img.height = 601; //height of slide
+  img.src = src; //src of img = src of passed variable aka the variable name itself
+  img.height = 601; //height of slide (would do this in a better way but all slides are same size so no need)
   img.width = 802; //width of slide
-  img.style.marginLeft = '300px'; //css edit nargin to left of the passed image
+  img.style.marginLeft = '300px'; //css edit nargin to left of the passed image (would also be better to do non absolute values and relative browser sizing but since fixed image sizes its ok)
   img.style.marginTop = '150px';  //css edit margain from top
   img.style.position = 'absolute'; //position of image is absolute from browser window and not relative to browser window size
-  document.body.appendChild(img); //Append the HTML body to add variable img with the paramaters passed //SHEEEESH im cracked - this comment remains beause I coded this too well to take the comment away
+  document.body.appendChild(img); //Append the HTML body to add variable img with the paramaters passed.
 }
 
 //This just plays the whole story with buttons to continue
@@ -71,12 +71,12 @@ var story = { //Part 1 of the trials, plays audio, shows image, asks for respons
 
 //You can add a line of code to each trial to disable going to next slide untill audio is finished, left this out while coding but very important to put back in when finished
  timeline: [ //state the timeline of the variable
-   { //I will comment one trial, all of this is true for all other trials only difference is number of buttons and image/sounds
+   { //I will comment on one trial, all of this is true for all other trials only difference is number of buttons and image/sounds
     type: 'audio-button-response', //type of trial
     stimulus: 'Assets/Sounds/part02.m4a', //stimulus for the trial
     choices: ['Hello Anna!'], //button choices, in this case one choice
     button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>'], //css for the button/s
-    on_load: function() { //on trial load show the slide image using the cracked addImg function
+    on_load: function() { //on trial load, show the slide image using the addImg function
         addImg("Assets/Photos/Slide2.png") //the slide image
     }//end of this first trial
    },//close first timeline part and add comma so timeline knows that it continues to next trial after this one returns true
@@ -243,7 +243,7 @@ var surprisedTrial = { //Trial if they answered they were surprised
     }
 };
 
-var notSurprisedTrial = {
+var notSurprisedTrial = { //Trial if they were not surprised
   type: 'audio-button-response',
     stimulus: 'Assets/Sounds/part18_notsurprised.m4a',
     choices: ['A little not surprised', 'Very not surprised'],
@@ -271,7 +271,8 @@ var if_node2 = { //first try im way too cracked at coding. this is the counter n
     conditional_function: function(){ //conditional function
         var data = jsPsych.data.get().last(2).values()[0].response; //gets value of response 2 trials ago (if you only do one trial ago its possible to go 
         //->surprised response -> if node 1 returns true-> surprised trial ->a little surprised answer(returns false) -> if_node2 checks for last response 
-        //(that is now false because of a little surprised answer -> returns true and runs notverysurprised trial before end.))
+        //(that is now false because of a little surprised answer -> returns true and runs notverysurprised trial before end when the trial should not be run.
+        //at first glance last(1) looks like it works here but this error is possible))
 
         if(data){ //if they clicked the second button
             return false; //skip the notSurprisedTrial
@@ -279,36 +280,34 @@ var if_node2 = { //first try im way too cracked at coding. this is the counter n
             return true; //if they did not click the second button do not skip the notSurprisedTrial
         }
     }
-}; //again another cracked function im too good at this
+}; //again another great function yeah!
 
-var end = { //Thanks participant and clears all images on screen, then tells that this is end of experiment. this trial is important for clearing images
+var end = { //Thanks participant and clears all images on screen, then tells that this is end of experiment. this trial is important for clearing images.
  type: 'instructions',
  pages: ['<p>Thank you for helping Anna find her duck!</p>',
          '<p>End of Experiment, Printing data</p>'],
  show_clickable_nav: true,
  on_load: function() {
-      clearImgs();
+      clearImgs(); //clears all images in HTML body
     }
 };
 
 var trials = ["Conf Practice", "Conf Feedback", "Conf Hello", "Conf Hello2", "Q - I cant/can see Anna", "Q - I cant/can see Annas duck", "Conf Next>", "Q - I cant/can see katie with duck", "Q - The boxes arent/are empty", 
-"Conf boxes empty", "Conf Next>", "Q - Anna cant/can see katie", "Conf Anna cant see", "Q - subject cant/can see where she puts duck", "Q - Conf Katie closed boxes", "Conf Katie is gone", "Conf Anna look duck", "Q - Not Surprised/Not Surprised", "Q - A little/Very"];
+"Conf boxes empty", "Conf Next>", "Q - Anna cant/can see katie", "Conf Anna cant see", "Q - subject cant/can see where she puts duck", "Conf Katie closed boxes", "Conf Katie is gone", "Conf Anna look duck", "Q - Not Surprised/Surprised", "Q - A little/Very"];
+//Writes the table to be concatinated with the user results to import to data analysis software with prefixes on choice questions
+//and prefixes on non choice questions to easily manipulate data
 
 
-
-jsPsych.init({
-  timeline: [instructions,practiceTrial,feedback,story,beforeSurprised,if_node,if_node2,end],
-  on_finish: function(){
-    //var userData = jsPsych.data.get().select('response').values
-    for (var i= trials.length; i-->0;)
-    {
-    console.log(jsPsych.data.get(trials)); //not working need to find a way to concatinate the tables still working on it
-    console.log((jsPsych.data.get().select('response').values[i]))
-    }
-    //var combinedData = trials.join(jsPsych.data.get().select('response').values[i]);
-    //console.log(trials);
-    //console.log(userData);
-    //console.log(combinedData);
+jsPsych.init({ //initalise the main timeline
+  timeline: [instructions,practiceTrial,feedback,story,beforeSurprised,if_node,if_node2,end], //main timeline variable
+  on_finish: function(){ //on finish, gather than concatinate important data for data analysis.
+    var userData = jsPsych.data.get().select('response').values
+    var concatData = []
+  for (var i= trials.length; i-->0;)
+   {
+   concatData[i] = trials[i]+", "+userData[i]
+   console.log(concatData[i])
+   }
   }
 });
 
