@@ -301,12 +301,12 @@ var trials = ["Conf Practice", "Conf Feedback", "Conf Hello", "Conf Hello2", "Q 
 jsPsych.init({ //initalise the main timeline
   timeline: [instructions,practiceTrial,feedback,story,beforeSurprised,if_node,if_node2,end], //main timeline variable
   on_finish: function(){ //on finish, gather than concatinate important data for data analysis.
-    var userData = jsPsych.data.get().select('response').values
-    var concatData = []
-  for (var i= trials.length; i-->0;)
+    var userData = jsPsych.data.get().select('response').values //get the user entered data with 0 being false and 1 being true
+    var concatData = [] //empty table to concatinate data into
+  for (var i= trials.length; i-->0;) //for loop for length of amount of trials
    {
-   concatData[i] = trials[i]+", "+userData[i]
-   console.log(concatData[i])
+   concatData[i] = trials[i]+", "+userData[i] //concatinate trials i with user data i with space and comma for readability
+   console.log(concatData[i]) //each loop after concatinating data print the current i of the concatinated data to check table
    }
   }
 });
