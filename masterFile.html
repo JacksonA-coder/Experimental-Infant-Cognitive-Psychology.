@@ -1,256 +1,439 @@
-<!DOCTYPE html>
-<html> 
-  <head>
-  <script src="jsPsych-master/jspsych.js"> //call the jspsych plugin</script>
-  <script src="jsPsych-master/plugins/jspsych-instructions.js">//call the extra plugins from jspsych that are needed</script>
-  <script src="jsPsych-master/plugins/jspsych-html-keyboard-response.js"></script>
-  <script src="jsPsych-master/plugins/jspsych-image-keyboard-response.js"></script>
-  <script src="jsPsych-master/plugins/jspsych-image-button-response.js"></script>
-  <script src="jsPsych-master/plugins/jspsych-audio-button-response.js"></script>
-  <script src="jsPsych-master/plugins/jspsych-audio-keyboard-response.js"></script>
-  <script src="jsPsych-master/plugins/jspsych-html-button-response.js"></script>
-  <script src="jsPsych-master/plugins/jspsych-preload.js">//Last extension, below line calls the css stylesheet</script>
-  <link rel="stylesheet" href="jsPsych-master/css/jspsych.css"> 
-</head>
-<body></body> 
-<script> 
- 
-var preload = { //Preloads all images and sounds specified in jspsych timeline (not sure if this works online)
+//This is my current project working on ignorance in childrens attributions of false beleif.
+
+
+
+var preload = { //Preloads all images and sounds specified in jspsych timeline (mainly the audio files)
  type: 'preload',
- auto_preload: true 
+ auto_preload: true
 };
 
-var instructions = { //Shows the participant instructions in four pages navigated by a next button
- type: 'instructions',
- pages: ['<p>In this experiment you will read/listen to a story and answer some questions.</p><p>Click next to begin.</p>',
-          '<p>When asked a question, one or two buttons (e.g. yes and no) will appear.</p>',
-          '<p>Choose the button that you prefer</p>',
-          '<p>When you are ready, click the next button to begin.</p>'],
- show_clickable_nav: true
+var images = ['Slide1.png', 'Slide2.png', 'Slide3.png', 'Slide4.png', 'Slide5.png', 'Slide6.png', 'Slide7.png', 
+ 'Slide8.png', 'Slide9.png', 'Slide10.png', 'Slide11.png', 'Slide12.png', 'Slide13.png', 'Slide14.png', 'Slide15.png',
+ 'Very.png', 'very_surprised.png', 'very_not_surprised.png', 'Yes.png', 'No.png', 'A little.png', 'Back arrow.png', 
+ 'Foward arrow.png','Up arrow.png', 'Clear,2,wrong.png', 'Slide2Q.png', 'Slide3Q.png', 'Slide4Q.png', 'Slide5Q.png', 'Slide6Q.png', 'Slide7Q.png', 
+ 'Slide8Q.png', 'Slide9Q.png', 'Slide10Q.png', 'Slide11Q.png', 'Slide12Q.png', 'Slide13Q.png', 'Slide14Q.png', 'Slide15Q.png']; //array of all images needed to be manually preloaded
+
+var parentInfo = { //asks how old their child is
+  type: 'survey-text',
+  questions: [
+    {prompt: "Please provide the full name of the child you are giving consent to participate in this study", rows: 1, columns: 30, name: 'childName'} 
+  ]
 };
 
-var practiceTrial = { //Gives the participant a practice trial with a choice of a correct and incorrect answer
-  type: 'html-button-response',
-  stimulus: '<p>Please click button labeled 2</p>', //ask for true response
-  choices: ['1', '2'], //1 is false, 2 is true (we ask for true response)
+var parentInfo2 = { //asks how old their child is
+  type: 'survey-text',
+  questions: [
+    {prompt: "I have read the email sent to me explaining the nature and purpose of this research and I agree to allow my child to participate in the study described. I understand that my child and I are free to withdraw participation at any time if either of us so chooses, and that the researcher will gladly answer any questions that arise during the course of research. I give consent for my child to participate in this study in the VUW Infant and Child Cognition Lab, and for my child’s behaviour in the study to be video recorded. I understand that participating in the study is entirely voluntary, that I may withdraw my child from the study at any time, for any reason, without penalty, and that I may request for my child’s video recording to be destroyed at any time during or after the study. Please write your full name below to agree.", rows: 1, columns: 30, name: 'nameConsent', placeholder: "Full name here"} 
+  ]
 };
 
-var feedback = { //tells you if you got last trial correct or incorrect (I can make them redo ect... but for now just tells if success or not)
-  type: 'html-keyboard-response',
-  show_clickable_nav: true,
-  stimulus: function(){
-   var last_trial_correct = jsPsych.data.get().last(1).values()[0].response; //this line asks what the last trials response was
-    if(last_trial_correct){//If the last trials response was correct
-      return "<p>You picked the correct button, Press any key to continue</p>"; //Correct response
+var parentInfo3 = { //asks how old their child is
+  type: 'survey-text',
+  questions: [
+    {prompt: "Please provide todays date:", rows: 1, columns: 30, name: 'dateGiven', placeholder: "dd/mm/yy"} 
+  ]
+};
+
+
+var questions1 = { //asks how old their child is
+  type: 'survey-text',
+  questions: [
+    {prompt: "How old is your child?", rows: 1, columns: 30, name: 'Age'} 
+  ]
+};
+
+var questions2 = { //asks what country they live in
+  type: 'survey-text',
+  questions: [
+    {prompt: "Country:", rows: 1, columns: 30, name: 'Country'}
+  ]
+};
+
+var questions3 = { //asks DOB for the first time
+  type: 'survey-text',
+  questions: [
+    {prompt: "Child's date of birth:", rows: 1, columns: 30, name: 'DOB', placeholder: "dd/mm/yy"} 
+  ]
+};
+
+var questions4 = { //Asks about possible developmental illnesses/delays
+ type: 'html-button-response',
+ stimulus: '<p>Has your child suffered any serious illness or injury: </p>', 
+ choices: ['Yes', 'No']
+};
+
+var questions5 = { //Asks gender
+ type: 'html-button-response',
+ stimulus: '<p>Childs Sex</p>',  //Clarify that this isnt parents sex?
+ choices: ['Male', 'Female', 'Other']
+};
+
+var questions6 = { //Asks if they have had a previous response
+ type: 'html-button-response',
+ stimulus: '<p>Has your child read this story before? It’s okay if they have!</p>', 
+ choices: ['Yes', 'No']
+};
+
+var parentChange = { //informs parent to change to kid ------NEED AUDIO
+  type: 'instructions',
+  show_clickable_nav:true,
+  pages: ['During the experiment please do not press the buttons for your child',
+  'This is to make sure that their choices are not influenced by any other things',
+  'The story will now load. (child navigated)']
+};
+
+
+var preload2 = { //manually preloads images needed
+ type: 'preload', 
+ images: images //loads all images specified in the images array
+};
+
+
+var fullscreen = {//forces fullscreen (need to test if messes with mobile comatability).   ***************
+ type: 'fullscreen',
+ fullscreen_mode: true
+};
+
+
+var practiceTrial1 = { //Introduction to arrow and info about clicking button
+ type: 'audio-button-response',
+ stimulus: 'Hi.m4a',
+ choices:  ["<img src='Foward arrow.png'"],
+ response_allowed_while_playing: false
+};
+
+
+var practiceTrial2 = { //Practice trial for pressing Yes
+  type: 'audio-button-response',
+  stimulus: 'Yes.m4a',
+  choices: ["<img src='Yes.png'", "<img src='No.png'"],
+  response_allowed_while_playing: false
+};
+
+var loop_node_practiceTrial2 = { //Loop if they press No
+    timeline: [practiceTrial2],
+    loop_function: function(data){
+        if(jsPsych.data.get().last(1).values()[0].response == 1){
+            return true;
+        } else {
+            return false;
+        }
     }
-    else {
-     return "<p>You picked incorrectly, Press any key to continue</p>"; //Incorrect response
-    }
-  }
-};
-
-clearImgs = function() //This is just a function that removes all images that have been put on screen.
-{
- for (var i= document.images.length; i-->0;)// for i== 1 -> the length of document.images.length
- document.images[i].parentNode.removeChild(document.images[i]); //remove image document.images(i)
 }
 
-var addImg = function(src){ //Function to add image to trial that works for all the the images as long as they are same size
-  var img = document.createElement("img"); //create an image on screen using the passed string as the img
-  img.src = src; //src of img = src of passed variable aka the variable name itself
-  img.height = 601; //height of slide (would do this in a better way but all slides are same size so no need)
-  img.width = 802; //width of slide
-  img.style.marginLeft = '300px'; //css edit nargin to left of the passed image (would also be better to do non absolute values and relative browser sizing but since fixed image sizes its ok)
-  img.style.marginTop = '150px';  //css edit margain from top
-  img.style.position = 'absolute'; //position of image is absolute from browser window and not relative to browser window size
-  document.body.appendChild(img); //Append the HTML body to add variable img with the paramaters passed.
-}
+var practiceTrial3 = { //Practice trial for very surprised face
+ type: 'audio-button-response',
+ stimulus: 'Surprised.m4a',
+ choices: ["<img src='very_surprised.png'", "<img src='very_not_surprised.png'"],
+ response_allowed_while_playing: false
+};
+
+var loop_node_practiceTrial3 = { //loop if they select surprised face
+    timeline: [practiceTrial3],
+    loop_function: function(data){
+        if(jsPsych.data.get().last(1).values()[0].response == 1){
+            return true;
+        } else {
+            return false;
+        }
+    }
+};
+
+var practiceTrial4 = { //Practice trial for circles (not very big trial)
+ type: 'audio-button-response',
+ stimulus: 'A little.m4a',
+ choices: ["<img src='Very.png'", "<img src='A little.png'"],
+ response_allowed_while_playing: false
+};
+
+var loop_node_practiceTrial4 = { //Loop if they select the large circle
+    timeline: [practiceTrial4],
+    loop_function: function(data){
+        if(jsPsych.data.get().last(1).values()[0].response == 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
+};
+
+var practiceTrial5 = { //Practice trial for No trial
+ type: 'audio-button-response',
+ stimulus: 'No.m4a',
+ choices: ["<img src='Yes.png'", "<img src='No.png'"],
+ response_allowed_while_playing: false
+};
+
+var loop_node_practiceTrial5 = { //Loop if they select Yes
+    timeline: [practiceTrial5],
+    loop_function: function(data){
+        if(jsPsych.data.get().last(1).values()[0].response == 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
+};
+
+var practiceTrial6 = { //Practice trial for surprised face
+ type: 'audio-button-response',
+ stimulus: 'Not surprised.m4a',
+ choices: ["<img src='very_surprised.png'", "<img src='very_not_surprised.png'"],
+ response_allowed_while_playing: false
+};
+
+var loop_node_practiceTrial6 = { //loop if they select not surprised face
+    timeline: [practiceTrial6],
+    loop_function: function(data){
+        if(jsPsych.data.get().last(1).values()[0].response == 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
+};
+
+var practiceTrial7 = { //Practice Trial for Very big circle
+ type: 'audio-button-response',
+ stimulus: 'A lot.m4a', 
+ choices: ["<img src='Very.png'", "<img src='A little.png'"],
+ response_allowed_while_playing: false
+};
+
+var loop_node_practiceTrial7 = { //Loop if they select not very big circle
+    timeline: [practiceTrial7],
+    loop_function: function(data){
+        if(jsPsych.data.get().last(1).values()[0].response == 1){
+            return true;
+        } else {
+            return false;
+        }
+    }
+};
+
+var preStory = { //Introduction to arrow and info about clicking button
+ type: 'audio-button-response',
+ stimulus: 'Intro start story.m4a',
+ choices:  ["<img src='Foward arrow.png'"],
+ response_allowed_while_playing: false
+};
 
 //This just plays the whole story with buttons to continue
-var story = { //Part 1 of the trials, plays audio, shows image, asks for response of one or two buttons before continue
-
-//You can add a line of code to each trial to disable going to next slide untill audio is finished, left this out while coding but very important to put back in when finished
+var story1 = { //Part 1 of the trials, plays audio, shows image, asks for response of one or two buttons before continue
+//You can add a line of code to each trial to disable going to next slide until audio is finished, left this out while coding but very important to put back in when finished
  timeline: [ //state the timeline of the variable
    { //I will comment on one trial, all of this is true for all other trials only difference is number of buttons and image/sounds
     type: 'audio-button-response', //type of trial
-    stimulus: 'Assets/Sounds/part02.m4a', //stimulus for the trial
-    choices: ['Hello Anna!'], //button choices, in this case one choice
+    stimulus: 'part02.m4a', //stimulus for the trial
+    choices: ["<img src='Foward arrow.png'"], //button choices, in this case one choice
     button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>'], //css for the button/s
+    response_allowed_while_playing: false,
     on_load: function() { //on trial load, show the slide image using the addImg function
-        addImg("Assets/Photos/Slide2.png") //the slide image
+        addImg("Slide2.png") //the slide image
     }//end of this first trial
    },//close first timeline part and add comma so timeline knows that it continues to next trial after this one returns true
 
    {
     type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part03.m4a',
-    choices: ['Hello Katie'],
+    stimulus: 'part03.m4a',
+    choices: ["<img src='Foward arrow.png'"],
     button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>'],
+    response_allowed_while_playing: false,
     on_load: function() {
-        addImg("Assets/Photos/Slide3.png")
+        addImg("Slide3.png")
     }
    }, 
 
    {
     type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part04.m4a',
-    choices: ['I Can NOT See Anna and her Duck','I Can see Anna and her Duck'],
+    stimulus: 'part04.m4a',
+    choices: ["<img src='Yes.png'", "<img src='No.png'"],
     button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>', '<button class="jspsych-btn" style = "position:absolute; left:775px; top: 801px">%choice%</button>'],
+    response_allowed_while_playing: false,
     on_load: function() {
-      addImg("Assets/Photos/Slide4.png")
+      addImg("Slide4.png")
     }
    },  
    
    {
     type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part05.m4a',
-    choices: ['I Can NOT see Annas Duck','I Can see Annas Duck.'],
+    stimulus: 'part05.m4a',
+    choices: ["<img src='Yes.png'", "<img src='No.png'"],
     button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>', '<button class="jspsych-btn" style = "position:absolute; left:775px; top: 801px">%choice%</button>'],
+    response_allowed_while_playing: false,
     on_load: function() {
-      addImg("Assets/Photos/Slide5.png")
+      addImg("Slide5.png")
     }
    },  
 
    {
     type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part06.m4a',
-    choices: ['Next >'],
+    stimulus: 'part06.m4a',
+    choices: ["<img src='Foward arrow.png'"],
     button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>'],
+    response_allowed_while_playing: false,
     on_load: function() {
-      addImg("Assets/Photos/Slide6.png")
+      addImg("Slide6.png")
     }
    },  
 
    {
     type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part07.m4a',
-    choices: ['I Can NOT see Katie with the duck.','I Can see Katie with the duck'],
+    stimulus: 'part07.m4a',
+    choices: ["<img src='Yes.png'", "<img src='No.png'"],
     button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>', '<button class="jspsych-btn" style = "position:absolute; left:775px; top: 801px">%choice%</button>'],
+    response_allowed_while_playing: false,
     on_load: function() {
-      addImg("Assets/Photos/Slide7.png")
+      addImg("Slide7.png")
     }
    },  
 
    {
     type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part08.m4a',
-    choices: ['NO the boxes are not all empty','YES the boxes are all empty'],
+    stimulus: 'part08.m4a',
+    choices: ["<img src='Yes.png'", "<img src='No.png'"],
     button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>', '<button class="jspsych-btn" style = "position:absolute; left:775px; top: 801px">%choice%</button>'],
+    response_allowed_while_playing: false,
     on_load: function() {
-      addImg("Assets/Photos/Slide8.png")
+      addImg("Slide8.png")
     }
    },  
 
    {
     type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part09.m4a',
-    choices: ['YES, all of the boxes are empty right now'],
+    stimulus: 'part09.m4a',
+    choices: ["<img src='Foward arrow.png'"],
     button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>'],
+    response_allowed_while_playing: false,
     on_load: function() {
-      addImg("Assets/Photos/Slide8.png")
+      addImg("Slide8.png")
     }
    },  
 
    {
     type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part10.m4a',
-    choices: ['Next >'],
+    stimulus: 'part10.m4a',
+    choices: ["<img src='Foward arrow.png'"],
     button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>'],
+    response_allowed_while_playing: false,
     on_load: function() {
-      addImg("Assets/Photos/Slide9.png")
+      addImg("Slide9.png")
     }
    },  
 
    {
     type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part11.m4a',
-    choices: ['Anna Can NOT see Katie','Anna Can see Katie'],
+    stimulus: 'part11.m4a',
+    choices: ["<img src='Yes.png'", "<img src='No.png'"],
     button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>', '<button class="jspsych-btn" style = "position:absolute; left:775px; top: 801px">%choice%</button>'],
+    response_allowed_while_playing: false,
     on_load: function() {
-      addImg("Assets/Photos/Slide10.png")
+      addImg("Slide10.png")
     }
    },
 
    {
     type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part12.m4a',
-    choices: ['Anna can NOT see what Katie is doing'],
+    stimulus: 'part12.m4a',
+    choices: ["<img src='Foward arrow.png'"],
     button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>'],
+    response_allowed_while_playing: false,
     on_load: function() {
-      addImg("Assets/Photos/Slide10.png")
+      addImg("Slide10.png")
     }
    },
    {
     type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part13.m4a',
-    choices: ['I Can NOT see where she is putting it','I Can see where she is putting it'],
+    stimulus: 'part13.m4a',
+    choices: ["<img src='Yes.png'", "<img src='No.png'"],
     button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>', '<button class="jspsych-btn" style = "position:absolute; left:775px; top: 801px">%choice%</button>'],
+    response_allowed_while_playing: false,
     on_load: function() {
-      addImg("Assets/Photos/Slide11.png")
+      addImg("Slide11.png")
     }
    },
    {
     type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part14.m4a',
-    choices: ['Katie has closed all the boxes'],
+    stimulus: 'part14.m4a',
+    choices: ["<img src='Foward arrow.png'"],
     button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>'],
+    response_allowed_while_playing: false,
     on_load: function() {
-      addImg("Assets/Photos/Slide12.png")
+      addImg("Slide12.png")
+    }
+   },
+    {
+    type: 'audio-button-response',
+    stimulus: 'part15.m4a',
+    choices: ["<img src='Foward arrow.png'"],
+    button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>'],
+    response_allowed_while_playing: false,
+    on_load: function() {
+      addImg("Slide13.png")
+    }
+   },
+   {
+   type: 'audio-button-response',
+    stimulus: 'Which box has Anna duck_ (1).m4a',
+    choices: ["<img src='Up arrow.png'", "<img src='Up arrow.png'",
+    "<img src='Up arrow.png'", "<img src='Up arrow.png'",
+    "<img src='Up arrow.png'", "<img src='Up arrow.png'"],
+    
+    button_html: ['<button class="jspsych-btn" style = "position:absolute; left:360px; top: 760px">%choice%</button>', 
+    '<button class="jspsych-btn" style = "position:absolute; left:460px; top: 760px">%choice%</button>', 
+    '<button class="jspsych-btn" style = "position:absolute; left:560px; top: 760px">%choice%</button>', 
+    '<button class="jspsych-btn" style = "position:absolute; left:770px; top: 760px">%choice%</button>', 
+    '<button class="jspsych-btn" style = "position:absolute; left:870px; top: 760px">%choice%</button>', 
+    '<button class="jspsych-btn" style = "position:absolute; left:970px; top: 760px">%choice%</button>'],
+    response_allowed_while_playing: false,
+    on_load: function() {
+      addImg("Slide13.png")
+      
     }
    },
    {
     type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part15.m4a',
-    choices: ['Katie is gone'],
+    stimulus: 'part16.m4a',
+    choices: ["<img src='Foward arrow.png'"],
     button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>'],
+    response_allowed_while_playing: false,
     on_load: function() {
-      addImg("Assets/Photos/Slide13.png")
-    }
-   },
-   {
-    type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part16.m4a',
-    choices: ['Anna is looking for her duck'],
-    button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>'],
-    on_load: function() {
-      addImg("Assets/Photos/Slide14.png")
+      addImg("Slide14.png")
     }
    }
  ]
 };
 
-
-var beforeSurprised = {
+var beforeSurprised = { //ask if they were surprised or not
   type: 'audio-button-response',
-  stimulus: 'Assets/Sounds/part17.m4a',
-  choices: ['I was NOT surprised','I was surprised'], //whoever made jspsych got this objectively wrong, the first button should return response as true not the second one
-  //this makes me irrationally annoyed but I fixed the trials by switching the buttons (also we should consider sides that buttons are in in each trial
-  //do we need to counterbalance sides of buttons (initial thought is probably yes))
+  stimulus: 'part17.m4a',
+  choices: ["<img src='very_not_surprised.png'", "<img src='very_surprised.png'"],
   button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>', '<button class="jspsych-btn" style = "position:absolute; left:775px; top: 801px">%choice%</button>'],
+  response_allowed_while_playing: false,
   on_load: function() {
-    addImg("Assets/Photos/Slide15.png")
+    if (CONDITION == 1){
+      addImg("Slide15.png")
+    }
+    if (CONDITION == 2){
+      addImg("Clear,2,wrong.png")
+    }
   }
-}
-
+};
 
 var surprisedTrial = { //Trial if they answered they were surprised
   type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part18_surprised.m4a',
-    choices: ['A little surprised', 'Very surprised'],
-    button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>', '<button class="jspsych-btn" style = "position:absolute; left:775px; top: 801px">%choice%</button>'],
-    on_load: function() {
-      addImg("Assets/Photos/Slide15.png")
-    }
+  stimulus: 'part18_surprised.m4a',
+  choices: ["<img src='Very.png'", "<img src='A little.png'"],
+  button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>', '<button class="jspsych-btn" style = "position:absolute; left:775px; top: 801px">%choice%</button>'],
+  response_allowed_while_playing: false
 };
 
 var notSurprisedTrial = { //Trial if they were not surprised
   type: 'audio-button-response',
-    stimulus: 'Assets/Sounds/part18_notsurprised.m4a',
-    choices: ['A little not surprised', 'Very not surprised'],
-    button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>', '<button class="jspsych-btn" style = "position:absolute; left:775px; top: 801px">%choice%</button>'],
-    on_load: function() {
-      addImg("Assets/Photos/Slide15.png")
-    }
+  stimulus: 'part18_notsurprised.m4a',
+  choices: ["<img src='Very.png'", "<img src='A little.png'"],
+  button_html: ['<button class="jspsych-btn" style = "position:absolute; left:375px; top: 801px">%choice%</button>', '<button class="jspsych-btn" style = "position:absolute; left:775px; top: 801px">%choice%</button>'],
+  response_allowed_while_playing: false
 };
 
 var if_node = {//if node
@@ -267,52 +450,167 @@ var if_node = {//if node
 };
 
 var if_node2 = { //first try im way too cracked at coding. this is the counter node to node 1 checking if returned true on surprised trial.
-    timeline: [notSurprisedTrial],//conditionally skipped timeline
+    timeline: [notSurprisedTrial],
     conditional_function: function(){ //conditional function
         var data = jsPsych.data.get().last(2).values()[0].response; //gets value of response 2 trials ago (if you only do one trial ago its possible to go 
         //->surprised response -> if node 1 returns true-> surprised trial ->a little surprised answer(returns false) -> if_node2 checks for last response 
         //(that is now false because of a little surprised answer -> returns true and runs notverysurprised trial before end when the trial should not be run.
-        //at first glance last(1) looks like it works here but this error is possible))
-
+        //at first glance last(1) looks like it works here but this pathing is possible and somewhat likely if set to 1))
         if(data){ //if they clicked the second button
             return false; //skip the notSurprisedTrial
         } else {
             return true; //if they did not click the second button do not skip the notSurprisedTrial
         }
     }
-}; //again another great function yeah!
+};
 
-var end = { //Thanks participant and clears all images on screen, then tells that this is end of experiment. this trial is important for clearing images.
- type: 'instructions',
- pages: ['<p>Thank you for helping Anna find her duck!</p>',
-         '<p>End of Experiment, Printing data</p>'],
- show_clickable_nav: true,
- on_load: function() {
-      clearImgs(); //clears all images in HTML body
+var postStory = { //Introduction to arrow and info about clicking button
+ type: 'audio-button-response',
+ stimulus: 'Get grown up.m4a',
+ choices:  ["<img src='Foward arrow.png'"],
+ response_allowed_while_playing: false,
+   on_load: function(){
+    clearImgs();
+  }
+};
+
+var comments = { //Asks for any complications
+  type: 'survey-text',
+  questions: [
+    {prompt: "Was there anything that happened during the experiment? If yes please breifly explain.", rows: 3, columns: 40, name: 'comments', placeholder: "There was a loud noise"} 
+  ]
+};
+
+var contact = { //Asks for contact info
+  type: 'survey-text',
+  questions: [
+    {prompt: "If you would like to be updated on progress with this study please enter your email address", rows: 1, columns: 40, name: 'contact', placeholder: "vuwbabylab@gmail.com"} 
+  ]
+};
+
+var debreif = { //Debreif
+  type: 'instructions',
+  pages: ['Welcome to the debreif',
+        'This is the second page of debreif.',
+        'This is the final page.'],
+    show_clickable_nav: true
+};
+
+
+
+
+
+//since all conditions require seperate paramaters and seperate specific trials as well as seperate image/sound clips
+//it is nessassary to have them in totally different timelines, ideally this would be a for loops
+
+var condition1 = { //timeline for condition 1, will need timelines and stories for each condition
+  timeline: [preload,parentInfo,parentInfo2,parentInfo3,questions1,questions2,questions3,questions4,questions5,
+  questions6,parentChange,preload2,practiceTrial1,loop_node_practiceTrial2, loop_node_practiceTrial3,
+  loop_node_practiceTrial4,loop_node_practiceTrial5,loop_node_practiceTrial6,
+  loop_node_practiceTrial7,preStory,story1,beforeSurprised,if_node,if_node2,
+  postStory,comments,contact,debreif]
+};
+
+var if_condition1 = { //Runs condition 1 IF the condition set is condition 1
+    timeline: [condition1],
+    conditional_function: function(){
+        if(CONDITION == 1){
+            return true;
+        } else {
+            return false;
+        }
     }
 };
 
-var trials = ["Conf Practice", "Conf Feedback", "Conf Hello", "Conf Hello2", "Q - I cant/can see Anna", "Q - I cant/can see Annas duck", "Conf Next>", "Q - I cant/can see katie with duck", "Q - The boxes arent/are empty", 
-"Conf boxes empty", "Conf Next>", "Q - Anna cant/can see katie", "Conf Anna cant see", "Q - subject cant/can see where she puts duck", "Conf Katie closed boxes", "Conf Katie is gone", "Conf Anna look duck", "Q - Not Surprised/Surprised", "Q - A little/Very"];
-//Writes the table to be concatinated with the user results to import to data analysis software with prefixes on choice questions
-//and prefixes on non choice questions to easily manipulate data
 
 
-jsPsych.init({ //initalise the main timeline
-  timeline: [instructions,practiceTrial,feedback,story,beforeSurprised,if_node,if_node2,end], //main timeline variable
-  on_finish: function(){ //on finish, gather than concatinate important data for data analysis.
-    var userData = jsPsych.data.get().select('response').values //get the user entered data with 0 being false and 1 being true
-    var concatData = [] //empty table to concatinate data into
-  for (var i= trials.length; i-->0;) //for loop for length of amount of trials
-   {
-   concatData[i] = trials[i]+", "+userData[i] //concatinate trials i with user data i with space and comma for readability
-   console.log(concatData[i]) //each loop after concatinating data print the current i of the concatinated data to check table
-   }
-  }
+
+
+var addImg = function(src){ //Function to add image function for slideshow
+  var img = document.createElement("img"); //create an image on screen using the passed string as the img
+  img.src = src;//src of img = src of passed variable aka the variable name itself
+  img.height = 601; //height of slide (would do this in the custom img function 
+                    //but all slides are same size so just use this one function.)
+  img.width = 802; //width of slide
+  img.style.marginLeft = '300px'; //css edit margin to left of the passed image (would also be better to do non absolute values and relative browser sizing but since fixed image sizes its ok)
+  img.style.marginTop = '150px';  //css edit margain from top
+  img.style.position = 'absolute'; //position of image is absolute from browser window and not relative to browser window size
+  document.body.appendChild(img); //Append the HTML body to add variable img with the paramaters passed.
+};
+
+var addImgCustom = function(src,height,width,marginLeft,marginTop,){//custom addimg
+  var img = document.createElement("img");  //If i have some time to spare possibly 
+  //edit all trials to use the custom addimg function because its much better 
+  //than the normal addimg function, (better coding and functionality)
+  img.src = src;
+  img.height = height; 
+  img.width = width; 
+  img.style.marginLeft = marginLeft; 
+  img.style.marginTop = marginTop;  
+  img.style.position = 'absolute'; 
+  document.body.appendChild(img); 
+};
+
+clearImgs = function() { //This is just a function that removes all images that have been put on screen.
+ for (var i= document.images.length; i-->0;)// for i== 1 -> the length of document.images.length
+ document.images[i].parentNode.removeChild(document.images[i]); //remove image document.images(i)
+};
+
+
+
+
+
+jsPsych.init({ //initalise the main timeline and jspsych
+  timeline: [if_condition1],
+  on_interaction_data_update: function(data) { //collection of data of when participants change windows/focus
+    console.log(JSON.stringify(data)+CONDITION) //log the data in console
+  },
 });
 
-  </script>
-</html>
+
+
+//https://github.com/jspsych/jsPsych/discussions/754?sort=new#discussioncomment-827860
+//scroll down a bit for code on how to deal with different conditions
+
+
+  //exclusions: { //exclusion criterion for browser windows being too small //might mess up mobile compatability need to check
+                              //****************
+   // min_width: 900,
+   // min_height: 700
+ // },
+ 
+ 
+ 
+//var trials = ["Conf Practice", "Conf Feedback", "Conf Hello", "Conf Hello2", "Q - I cant/can see Anna", "Q - I cant/can see Annas duck", "Conf Next>", "Q - I cant/can see katie with duck", "Q - The boxes arent/are empty", 
+//"Conf boxes empty", "Conf Next>", "Q - Anna cant/can see katie", "Conf Anna cant see", "Q - subject cant/can see where she puts duck", "Conf Katie closed boxes", "Conf Katie is gone", "Conf Anna look duck", "Q - Not Surprised/Surprised", "Q - A little/Very"];
+//Writes the table to be concatinated with the user results to import to data analysis software with prefixes on choice questions
+//and prefixes on non choice questions to easily manipulate data
+//outdated needs to be updated once finalised
 
 
 
+//var feedback1 = { //feedback trials are pretty obsolite now as they require a return that messes up 
+                  //mobile users, but ill leave them incase needed later
+ // type: 'html-keyboard-response',
+ // show_clickable_nav: true,
+  //stimulus: function(){
+    //if(jsPsych.data.get().last(1).values()[0].response == 2){//If the last trials response was correct
+     // return "<p>You picked the correct button, Press any key to continue</p>"; //Correct response
+   // }
+    //else {
+    // return "<p>You picked incorrectly, Press any key to continue</p>"; //Incorrect response
+   // }
+ // }
+//};
+
+
+
+  //on_finish: function(){ //on finish, gather than concatinate important data for data analysis.
+    //var userData = jsPsych.data.get().select('response').values //get the user entered data with 0 being false and 1 being true
+    //var concatData = [] //empty table to concatinate data into
+ // for (var i= trials.length; i-->0;) //for loop for length of amount of trials
+  // {
+  // concatData[i] = trials[i]+", "+userData[i] //concatinate trials i with user data i with space and comma for readability
+ //  console.log(concatData[i]) //each loop after concatinating data print the current i of the concatinated data to check table
+  // } //great for loop but needs to be updated once finalised so we know how many trials there will be
+  //}
